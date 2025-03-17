@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 // import { Rubik } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { HeroUIProvider } from "@heroui/react";
-import SidebarComponent from "@/components/SidebarComponent";
 import SearchComponent from "@/components/SearchComponent";
+import SidebarComponent from "@/components/SidebarComponent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +22,7 @@ export const metadata = {
 
 // const Rubik = Rubik({ subsets: ["latin"] });
 
-export default function RootLayout({ children }) {
+export default function HomeLayout({ children }) {
   return (
     <html lang="en">
       <body
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
       >
         <section className="flex justify-between gap-x-14 ">
           <SidebarComponent />
-          <article className="space-y-10 grow ">
+          <article className="space-y-10 grow pr-14">
             <SearchComponent />
             <HeroUIProvider> {children}</HeroUIProvider>
           </article>

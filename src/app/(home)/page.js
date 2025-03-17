@@ -7,7 +7,7 @@ import cardsList from "@/data/cardCategory";
 function HomePage() {
   return (
     <>
-      <article className="w-full pr-14">
+      <article className="w-full ">
         <section className="bg-white h-[83vh] rounded-lg p-10">
           <div className="px-3 py-2 rounded-md bg-gray-white w-[200px] text-center">
             <h4 className="text-secondary text-2xl font-normal">Homepage</h4>
