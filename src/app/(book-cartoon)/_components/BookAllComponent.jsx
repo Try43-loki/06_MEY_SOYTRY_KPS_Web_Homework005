@@ -44,6 +44,7 @@ function BookAllComponent({ books, categories }) {
         );
       }
     }
+    console.log(filtered);
     if (searchQuery) {
       filtered = filtered.filter((book) =>
         book.book_title.toLowerCase().includes(searchQuery.toLowerCase())

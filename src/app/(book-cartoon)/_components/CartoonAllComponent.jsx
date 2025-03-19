@@ -23,14 +23,17 @@ function CartoonAllComponent({ cartoons, genre }) {
   useEffect(() => {
     // set default
     let filtered = cartoonBooks;
-
+    console.log(filtered);
     if (selectedGenre && selectedGenre !== "ALL") {
       const selectedGen = getCategoryById(selectedGenre);
+      console.log(selectedGen.id);
       if (selectedGen) {
-        filtered = filtered.filter((book) => book.id == selectedGen.id);
+        filtered = filtered.filter(
+          (book) => book.ct_genre_id == selectedGen.id
+        );
       }
     }
-
+    console.log(filtered);
     if (searchQuery) {
       filtered = filtered.filter((book) =>
         book.ct_title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +63,7 @@ function CartoonAllComponent({ cartoons, genre }) {
             ))}
           </select>
         </section>
-        <article className="w-full h-[64vh] rounded-b-3xl grid grid-cols-3 gap-10 mt-6 pt-6 border-t-1 border-t-secondary overflow-y-auto">
+        <article className="w-full h-[69vh] rounded-b-3xl grid grid-cols-3 gap-10 mt-6 pt-6 border-t-secondary border-t-2 overflow-y-auto">
           {filteredBooks.map((book, index) => (
             <figure
               key={index}
@@ -75,11 +78,11 @@ function CartoonAllComponent({ cartoons, genre }) {
                   />
                 </a>
               </figcaption>
-              <article className="mt-2">
+              <article className="mt-2 text-start  w-[280px]">
                 <h4 className="text-primary text-xl font-semibold ">
-                  The Hidden Treasure
+                  {book.ct_title}
                 </h4>
-                <div className="text-secondary text-medium flex justify-start gap-2 items-center ">
+                <div className="text-secondary text-medium flex justify-start gap-2 items-center text-start w-full">
                   <Eye size={20} />
                   <span>{book.view_count}</span> times |{" "}
                   <span>{book.published_year}</span>

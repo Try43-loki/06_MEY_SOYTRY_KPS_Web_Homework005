@@ -5,7 +5,7 @@ import React from "react";
 function BookDetailComponent({ currentBooks, isBook, isCartoon }) {
   return (
     <>
-      <section className="p-24 mb-16">
+      <section className="p-24">
         <div className="flex justify-start items-center gap-x-4 mb-10">
           <a
             href="/"

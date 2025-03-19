@@ -23,12 +23,13 @@ async function DetailPageOne({ params }) {
   //find book
   const currentBook = books.find((book) => book.book_title === currentTitle);
   //find cartoon
-  const cureentCatoon = cartoons.find(
-    (cartoon) => cartoon.book_title === currentTitle
+  const currentCartoon = cartoons.find(
+    (cartoon) => cartoon.ct_title === currentTitle
   );
 
   // current data
-  const currentBooks = currentBook ? currentBook : cureentCatoon;
+  const currentBooks = currentBook ? currentBook : currentCartoon;
+  console.log("currentBooks : ", currentBooks);
 
   return (
     <>
