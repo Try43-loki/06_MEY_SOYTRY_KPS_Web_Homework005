@@ -1,49 +1,92 @@
 "use client";
-import React from "react";
-import FilterComponent from "./FilterComponent";
-import { Button } from "@heroui/react";
+import React, { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
-export const animals = [
-  { key: "cat", label: "Cat" },
-  { key: "dog", label: "Dog" },
-  { key: "elephant", label: "Elephant" },
-  { key: "lion", label: "Lion" },
-  { key: "tiger", label: "Tiger" },
-  { key: "giraffe", label: "Giraffe" },
-  { key: "dolphin", label: "Dolphin" },
-  { key: "penguin", label: "Penguin" },
-  { key: "zebra", label: "Zebra" },
-  { key: "shark", label: "Shark" },
-  { key: "whale", label: "Whale" },
-  { key: "otter", label: "Otter" },
-  { key: "crocodile", label: "Crocodile" },
-];
-function CartoonAllComponent() {
+import { useSearch } from "@/services/searchContent";
+function CartoonAllComponent({ cartoons, genre }) {
+  const cartoonBooks = cartoons.payload;
+  const genres = genre.payload;
+  const { searchQuery } = useSearch();
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState(cartoonBooks);
+
+  // Handle category selection
+  const handleGenreChange = (e) => {
+    setSelectedGenre(e.target.value);
+  };
+
+  // Find category ID by name
+  const getCategoryById = (selected) => {
+    return genres.find((gen) => gen.cartoon_genre === selected);
+  };
+
+  // Filtering books by category and search
+  useEffect(() => {
+    // set default
+    let filtered = cartoonBooks;
+
+    if (selectedGenre && selectedGenre !== "ALL") {
+      const selectedGen = getCategoryById(selectedGenre);
+      if (selectedGen) {
+        filtered = filtered.filter((book) => book.id == selectedGen.id);
+      }
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter((book) =>
+        book.ct_title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredBooks(filtered);
+  }, [selectedGenre, cartoonBooks, searchQuery]);
   return (
     <>
       <section className="w-full bg-white rounded-3xl h-[83vh] p-10">
-        <FilterComponent />
+        <section className="w-full flex justify-between items-center">
+          <div className="px-3 py-2 rounded-md bg-gray-white text-center">
+            <h4 className="text-secondary text-xl font-normal">
+              {selectedGenre == "" ? "ALL books" : selectedGenre}
+            </h4>
+          </div>
+          <select
+            onChange={handleGenreChange}
+            className="bg-gray-white px-3 py-2 rounded-md  outline-none text-primary text-xl"
+          >
+            <option value="ALL">Select All</option>
+            {genres.map((gen, index) => (
+              <option key={index} value={gen.cartoon_genre}>
+                {gen.cartoon_genre}
+              </option>
+            ))}
+          </select>
+        </section>
         <article className="w-full h-[64vh] rounded-b-3xl grid grid-cols-3 gap-10 mt-6 pt-6 border-t-1 border-t-secondary overflow-y-auto">
-          <figure className="w-full flex flex-col justify-center items-start cursor-pointer ">
-            <figcaption>
-              <a href={`read-full`}>
-                <img
-                  src="https://s3-alpha-sig.figma.com/img/53b7/da50/f304cb33a6800220ad4dc667b09edb1c?Expires=1743379200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=UnI-o082Y0Zgm6eSKTdcYYHqZkLBSe8pUH1k8hh147PDwaYYiglGlvm5g8-ZeYhYXRH-bZfR9yoz4HuLWJ0oZYd7nkEsysovgdblpM6HV2v5MH8lHyI9v~0dBA8f4vM83CG8bS0MWKXbAn6unIedWU8jtslmeOp-0eoiW3CNZ34yziW9KaJ84~SkxmWFx1vtQHF-kxClD-nurKR6KHJPcHL-VNZOneJ8cpJ7N13pwr9nZa2cBslQ2ibv7Mbp7px8m3M~K-lN9D7iS-hYW-DYSOFhRt-gJQ3sIrOv21dHA0aRR85vnpdipq2pbKj6kC3YAuI5K4i5mHEaiera5JbjOw__"
-                  alt=""
-                  className="rounded-2xl  w-[280px] h-[380px] object-cover"
-                />
-              </a>
-            </figcaption>
-            <article className="mt-2">
-              <h4 className="text-primary text-xl font-semibold ">
-                The Hidden Treasure
-              </h4>
-              <div className="text-secondary text-medium flex justify-start gap-2 items-center ">
-                <Eye size={20} />
-                <span>20</span> times | <span>1990</span>
-              </div>
-            </article>
-          </figure>
+          {filteredBooks.map((book, index) => (
+            <figure
+              key={index}
+              className="w-full flex flex-col justify-center items-center cursor-pointer "
+            >
+              <figcaption>
+                <a href={`/read-full/${encodeURIComponent(book.ct_title)}`}>
+                  <img
+                    src={book.image}
+                    alt={book.ct_title}
+                    className="rounded-2xl  w-[280px] h-[380px] object-cover"
+                  />
+                </a>
+              </figcaption>
+              <article className="mt-2">
+                <h4 className="text-primary text-xl font-semibold ">
+                  The Hidden Treasure
+                </h4>
+                <div className="text-secondary text-medium flex justify-start gap-2 items-center ">
+                  <Eye size={20} />
+                  <span>{book.view_count}</span> times |{" "}
+                  <span>{book.published_year}</span>
+                </div>
+              </article>
+            </figure>
+          ))}
         </article>
       </section>
     </>

@@ -1,60 +1,116 @@
 "use client";
-import React from "react";
-import FilterComponent from "./FilterComponent";
+import React, { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
-export const animals = [
-  { key: "cat", label: "Cat" },
-  { key: "dog", label: "Dog" },
-  { key: "elephant", label: "Elephant" },
-  { key: "lion", label: "Lion" },
-  { key: "tiger", label: "Tiger" },
-  { key: "giraffe", label: "Giraffe" },
-  { key: "dolphin", label: "Dolphin" },
-  { key: "penguin", label: "Penguin" },
-  { key: "zebra", label: "Zebra" },
-  { key: "shark", label: "Shark" },
-  { key: "whale", label: "Whale" },
-  { key: "otter", label: "Otter" },
-  { key: "crocodile", label: "Crocodile" },
-];
-function BookAllComponent() {
+import { useSearch } from "@/services/searchContent";
+
+function BookAllComponent({ books, categories }) {
+  const booksList = books.payload;
+  const categoryList = categories.payload;
+  const { searchQuery } = useSearch();
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState(booksList);
+  const [searchBooks, setSearchBooks] = useState("");
+
+  useEffect(() => {
+    setSearchBooks(searchQuery);
+  }, [searchQuery]);
+  // hadle search book title
+  const searchBookTitle = (searchBooks) => {
+    const filtered = booksList.filter((book) =>
+      book.book_title.toLowerCase().includes(searchBooks.toLowerCase())
+    );
+    setFilteredBooks(filtered);
+  };
+
+  // Handle category selection
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+  // Find category ID by name
+  const getCategoryById = (selected) => {
+    return categoryList.find((cate) => cate.book_cate_name === selected);
+  };
+
+  // Filtering books by category and search
+  useEffect(() => {
+    // set default
+    let filtered = booksList;
+
+    if (selectedCategory && selectedCategory !== "ALL") {
+      const selectedCate = getCategoryById(selectedCategory);
+      if (selectedCate) {
+        filtered = filtered.filter(
+          (book) => book.book_cate_id == selectedCate.id
+        );
+      }
+    }
+    if (searchQuery) {
+      filtered = filtered.filter((book) =>
+        book.book_title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    searchBookTitle(searchBooks);
+    setFilteredBooks(filtered);
+  }, [selectedCategory, booksList, searchQuery]);
+
   return (
-    <>
-      <section className="w-full bg-white rounded-3xl h-[83vh] p-10">
-        <FilterComponent />
-        <article className="w-full grid grid-cols-2 gap-10 mt-4 pt-32  border-t-secondary">
-          <figure className="flex gap-8 justify-center items-end bg-gray-white rounded-3xl p-8">
-            <figcaption className="relative">
-              <img
-                src="https://s3-alpha-sig.figma.com/img/8c2e/0d73/31bc8262eac933a719ec8b34ab17918d?Expires=1743379200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=W7Vn7rt6JLXI42driARNTQ34NsFZkSv~JMWqcIunpF915GIl9kw86iNN6WfA-43jiReVSKYBOv-Ao644LbtLKSjgYVXILZXHW-t~EbrGn71jzJsvzMZVfn-hHycM2USUnJsBWZcDi9qwXCU9qaLrZEDVq5R6ROaPGN9i0FD3HpwewTPMVrPi3qb6tgkhcAexHuDqHMa7kvFb4dhCz1BNc2NTSOfCwMDqWzeu~esekY~Zc7Mb6~BEPt0hfSqTYGq0DLEHZxPyEc8yXTPH1ExwCsaOOMX8cO7vkbZpaJ5WfZtjY4AmzXVutegKqFeuBd2gWETGL4Wqj~ogH8FBaKqGvw__"
-                alt=""
-                height="250px"
-                width="160px"
-                className="rounded-3xl absolute top-[-260px]"
-              />
-              <Button
-                className="bg-thirdary text-primary w-[160px] "
-                radius="full"
-                size="lg"
-              >
-                READ FULL ARTICLE
-              </Button>
-            </figcaption>
-            <div>
-              <h4 className="text-2xl text-primary font-bold">
-                {" "}
-                How Do You Live?
-              </h4>
-              <p className="text-xl line-clamp-5 max-w-[200px]">
-                The novel's enduring themes of self-discovery and ethical living
-                continue to resonate, prompting reflections on how one should
-                live a meaningful life.
-              </p>
-            </div>
-          </figure>
-        </article>
+    <section className="w-full bg-white rounded-3xl h-[83vh] p-10">
+      {/* Filter Section */}
+      <section className="w-full flex justify-between items-center">
+        <div className="px-3 py-2 rounded-md bg-gray-white text-center">
+          <h4 className="text-secondary text-xl font-normal">
+            {selectedCategory == "" ? "ALL books" : selectedCategory}
+          </h4>
+        </div>
+        <select
+          onChange={handleCategoryChange}
+          className="bg-gray-white px-3 py-2 rounded-md  outline-none text-primary text-xl"
+        >
+          <option value="ALL">Select All</option>
+          {categoryList.map((category) => (
+            <option key={category.id} value={category.book_cate_name}>
+              {category.book_cate_name}
+            </option>
+          ))}
+        </select>
       </section>
-    </>
+
+      <article className="w-full grid grid-cols-2 h-[70vh] border-t-secondary border-t-2 overflow-y-scroll mt-4">
+        {filteredBooks.map((item, index) => (
+          <section
+            key={index}
+            className="w-full flex justify-center items-center mt-40"
+          >
+            <figure className="w-[460px] flex gap-8 justify-between items-end bg-gray-white rounded-3xl p-8">
+              <figcaption className="relative">
+                <img
+                  src={item.image}
+                  alt={item.book_title}
+                  className="rounded-3xl absolute top-[-260px] w-[160px] h-[250px] object-cover"
+                />
+                <a href={`/read-full/${encodeURIComponent(item.book_title)}`}>
+                  <Button
+                    className="bg-thirdary text-primary w-[160px]"
+                    radius="full"
+                    size="lg"
+                  >
+                    READ FULL ARTICLE
+                  </Button>
+                </a>
+              </figcaption>
+              <div className="max-w-[230px]">
+                <h4 className="text-xl text-primary font-bold line-clamp-1">
+                  {item.book_title}
+                </h4>
+                <p className="line-clamp-5 max-w-[200px text-justify">
+                  {item.description}
+                </p>
+              </div>
+            </figure>
+          </section>
+        ))}
+      </article>
+    </section>
   );
 }
 

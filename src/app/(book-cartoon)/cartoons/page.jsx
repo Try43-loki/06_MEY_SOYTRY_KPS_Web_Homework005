@@ -1,10 +1,16 @@
 import React from "react";
 import CartoonAllComponent from "../_components/CartoonAllComponent";
+import {
+  getAllCartoonBookService,
+  getGenreCartoonBookService,
+} from "@/services/cartoon.service";
 
-function CartoonPage() {
+async function CartoonPage() {
+  const cartoons = await getAllCartoonBookService();
+  const genre = await getGenreCartoonBookService();
   return (
     <>
-      <CartoonAllComponent />
+      <CartoonAllComponent cartoons={cartoons} genre={genre} />
     </>
   );
 }

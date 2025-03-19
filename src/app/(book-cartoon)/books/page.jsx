@@ -1,14 +1,14 @@
 import React from "react";
 import BookAllComponent from "../_components/BookAllComponent";
-import getAllBooksService from "@/services/book.service";
+import { getAllBooksService, getBookCategories } from "@/services/book.service";
 
 async function BookPage() {
   const books = await getAllBooksService();
-  console.log("books : ", books);
+  const categories = await getBookCategories();
 
   return (
     <>
-      <BookAllComponent />
+      <BookAllComponent books={books} categories={categories} />
     </>
   );
 }
