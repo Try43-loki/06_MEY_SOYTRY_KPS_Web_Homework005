@@ -29,7 +29,6 @@ async function DetailPageOne({ params }) {
 
   // current data
   const currentBooks = currentBook ? currentBook : currentCartoon;
-  console.log("currentBooks : ", currentBooks);
 
   return (
     <>
